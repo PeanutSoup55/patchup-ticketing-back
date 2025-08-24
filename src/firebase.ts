@@ -1,5 +1,6 @@
 import admin from 'firebase-admin';
 import { getFirestore } from 'firebase-admin/firestore';
+import { getAuth } from 'firebase-admin/auth';
 
 const serviceAccount = require('../sdk.json');
 
@@ -18,4 +19,5 @@ const initializeFirebase = () => {
 
 initializeFirebase();
 export const db = getFirestore();
+export const auth = getAuth();
 export default admin;
