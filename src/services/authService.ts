@@ -39,4 +39,22 @@ export class AuthService {
             throw new Error('Failed to create user');
         }
     }
+
+    static async getUserByUid(uid: string): Promise<User | null> {
+        try {
+            const userDoc = await db.collection('users').doc(uid).get();
+            if (!userDoc.exists) {
+                return null;
+            }
+
+            return {
+                uid,
+                ...userDoc.data()
+            } as User;
+            
+        }catch (error) {
+            console.error('Error fetching user: ', error);
+            throw new Error('Failed to fetch user');
+        }
+    }
 }
