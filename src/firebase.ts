@@ -1,16 +1,18 @@
 import admin from 'firebase-admin';
 import { getFirestore } from 'firebase-admin/firestore';
 
+const serviceAccount = require('../sdk.json');
+
+console.log('Service account project_id:', serviceAccount.project_id);
+console.log('Service account client_email:', serviceAccount.client_email);
+
 const initializeFirebase = () => {
     if (!admin.apps.length) {
         admin.initializeApp({
-            credential: admin.credential.cert({
-                projectId: process.env.FIREBASE_PROJECT_ID,
-                clientEmail: process.env.FIREBASE_CLIENT_EMAIL,
-                privateKey: process.env.FIREBASE_PRIVATE_KEY?.replace(/\\n/g, '\n'),
-            }),
-            projectId: process.env.FIREBASE_PROJECT_ID,
+            credential: admin.credential.cert(serviceAccount),
+            projectId: serviceAccount.project_id
         });
+        console.log('Firebase initialized successfully');
     }
 };
 
