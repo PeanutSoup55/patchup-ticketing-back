@@ -72,4 +72,21 @@ export class AuthService {
             throw new Error('Failed to update user');
         }
     }
+
+    static async deactivateUser(uid: string): Promise<void> {
+        try {
+            await Promise.all([
+                auth.updateUser(uid, { disabled: true}),
+                db.collection('users').doc(uid).update({
+                    isActive: false,
+                    updatedAt: new Date()
+                })
+            ]);
+        }catch(error) {
+            console.error('Error deactivating user:', error);
+            throw new Error('Failed to deactivate user');
+        }
+    }
+
+    
 }
