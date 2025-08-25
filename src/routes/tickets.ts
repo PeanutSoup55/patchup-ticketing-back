@@ -5,6 +5,16 @@ import { verifyToken, requireAdmin, requireEmployeeOrAdmin, AuthRequest } from '
 
 const router = Router();
 
+// Get ticket statistics (admin only)
+router.get('/stats/overview', verifyToken, requireAdmin, async (req: AuthRequest, res) => {
+    try {
+      const stats = await TicketService.getTicketStats();
+      res.json({ stats });
+    } catch (error: any) {
+      res.status(500).json({ error: error.message });
+    }
+  });
+
 // Create ticket (customers and admins)
 router.post('/', verifyToken, async (req: AuthRequest, res) => {
   try {
@@ -259,14 +269,5 @@ router.delete('/:id', verifyToken, requireAdmin, async (req: AuthRequest, res) =
   }
 });
 
-// Get ticket statistics (admin only)
-router.get('/stats/overview', verifyToken, requireAdmin, async (req: AuthRequest, res) => {
-  try {
-    const stats = await TicketService.getTicketStats();
-    res.json({ stats });
-  } catch (error: any) {
-    res.status(500).json({ error: error.message });
-  }
-});
 
 export default router;
