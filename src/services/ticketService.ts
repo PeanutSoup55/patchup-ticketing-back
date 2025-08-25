@@ -1,4 +1,5 @@
 import { db } from '../firebase';
+import { FieldValue } from 'firebase-admin/firestore';
 import { Ticket, TicketStatus, TicketComment, CreateTicketRequest, UpdateTicketRequest, UserRole } from '../types';
 import { v4 as uuidv4 } from 'uuid';
 
@@ -58,7 +59,7 @@ export class TicketService {
     updatedBy: string
   ): Promise<Ticket | null> {
     try {
-      const updateData = {
+      const updateData: any = {
         ...updates,
         updatedAt: new Date()
       };
@@ -206,7 +207,7 @@ export class TicketService {
 
       // Add comment to ticket's comments array
       await db.collection('tickets').doc(ticketId).update({
-        comments: db.FieldValue.arrayUnion(comment),
+        comments: FieldValue.arrayUnion(comment),
         updatedAt: new Date()
       });
 
