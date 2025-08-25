@@ -88,5 +88,30 @@ export class AuthService {
         }
     }
 
-    
+    static async getEmployees(): Promise<User[]> {
+        try {
+            const snapshot = await db.collection('users')
+                .where('role', 'in', [UserRole.EMPLOYEE, UserRole.ADMIN])
+                .where('isActive', '==', true)
+                .get();
+            
+            return snapshot.docs.map(doc => ({
+                uid: doc.id,
+                ...doc.data()
+            })) as User[];
+        } catch(error) {
+            console.error('Error fetching employees:', error);
+            throw new Error('Failed to fetch employees');
+        }
+    }
+
+    static async setUserClaims(uid: string, role: UserRole): Promise<void> {
+        try {
+            await auth.setCustomUserClaims(uid, { role });
+            console.log(`Successfully set custom claims for user ${uid}:`, { role });
+        } catch (error) {
+            console.error('Error setting custom claims:', error);
+            throw new Error('Failed to set custom claims');
+        }
+    }
 }
