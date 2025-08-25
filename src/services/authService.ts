@@ -51,10 +51,25 @@ export class AuthService {
                 uid,
                 ...userDoc.data()
             } as User;
-            
+
         }catch (error) {
             console.error('Error fetching user: ', error);
             throw new Error('Failed to fetch user');
+        }
+    }
+
+    static async updateUser( uid: string, updates: Partial<User>): Promise<User | null> {
+        try {
+            const updateData = {
+                ...updates,
+                updatedAt: new Date()
+            }
+
+            await db.collection('users').doc(uid).update(updateData);
+            return await this.getUserByUid(uid);
+        } catch (error) {
+            console.error('Error updating user:', error);
+            throw new Error('Failed to update user');
         }
     }
 }
