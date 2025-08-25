@@ -41,5 +41,5 @@ export const checkRole = (roles: UserRole[]) => {
 }
 
 export const requireAdmin = checkRole([UserRole.ADMIN]);
-export const requireEmployee = checkRole([UserRole.ADMIN, UserRole.EMPLOYEE]);
+export const requireEmployeeOrAdmin = checkRole([UserRole.ADMIN, UserRole.EMPLOYEE]);
 export const requireCustomer = checkRole([UserRole.CUSTOMER, UserRole.EMPLOYEE, UserRole.ADMIN]);
