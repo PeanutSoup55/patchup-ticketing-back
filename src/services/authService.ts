@@ -91,7 +91,7 @@ export class AuthService {
     static async getEmployees(): Promise<User[]> {
         try {
             const snapshot = await db.collection('users')
-                .where('role', 'in', [UserRole.EMPLOYEE, UserRole.ADMIN])
+                .where('role', 'in', [UserRole.EMPLOYEE])
                 .where('isActive', '==', true)
                 .get();
             

@@ -26,7 +26,7 @@ export const verifyToken = async (req: AuthRequest, res: Response, next: NextFun
         } as User;
 
         next();
-    }catch (error) {
+    } catch (error) {
         console.error('Error verifying token:', error);
         return res.status(401).json({ message: 'Unauthorized' });
     }
@@ -37,6 +37,7 @@ export const checkRole = (roles: UserRole[]) => {
         if (!req.user || !roles.includes(req.user.role)) {
             return res.status(403).json({ message: 'Forbidden: insufficient permissions' });
         }
+        next(); 
     }
 }
 

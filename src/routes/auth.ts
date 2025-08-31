@@ -2,6 +2,8 @@ import { Router } from 'express';
 import { AuthService } from '../services/authService';
 import { UserRole } from '../types';
 import { verifyToken, requireAdmin, AuthRequest } from '../middleware/auth';
+import { auth } from 'firebase-admin';
+import { db } from '../firebase';
 
 const router = Router();
 
@@ -100,5 +102,49 @@ router.delete('/users/:uid', verifyToken, requireAdmin, async (req: AuthRequest,
     res.status(500).json({ error: error.message });
   }
 });
+
+// Add this route to your backend/src/routes/auth.ts
+router.post('/login', async (req, res) => {
+    try {
+      const { idToken } = req.body;
+  
+      if (!idToken) {
+        return res.status(400).json({ error: 'ID token is required' });
+      }
+  
+      // Verify the Firebase ID token using Admin SDK
+      // Call auth() to get the Auth instance, then use verifyIdToken
+      const decodedToken = await auth().verifyIdToken(idToken);
+      const uid = decodedToken.uid;
+  
+      // Get user data from Firestore
+      const userData = await AuthService.getUserByUid(uid);
+      
+      if (!userData) {
+        return res.status(404).json({ error: 'User not found in database' });
+      }
+  
+      // Check if user is active
+      if (!userData.isActive) {
+        return res.status(403).json({ error: 'Account is deactivated' });
+      }
+  
+      res.json({ 
+        message: 'Login successful',
+        user: userData,
+        token: idToken
+      });
+  
+    } catch (error: any) {
+        console.error('Login error:', error);
+        if (error.code === 'auth/id-token-expired') {
+            return res.status(401).json({ error: 'Token expired' });
+        }
+        if (error.code === 'auth/id-token-revoked') {
+            return res.status(401).json({ error: 'Token revoked' });
+        }
+        res.status(401).json({ error: 'Invalid token' });
+    }
+  });
 
 export default router;
